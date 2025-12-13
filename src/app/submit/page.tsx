@@ -1,12 +1,29 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function SubmitPage() {
-    const { register, handleSubmit, reset } = useForm();
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const { register, handleSubmit, reset, setValue } = useForm();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [file, setFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.push('/login?callbackUrl=/submit');
+        }
+        if (session?.user) {
+            setValue('name', session.user.name);
+            setValue('email', session.user.email);
+        }
+    }, [status, session, setValue, router]);
+
+    if (status === 'loading') return <div className="text-center mt-20">Loading...</div>;
+    if (!session) return null;
 
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);

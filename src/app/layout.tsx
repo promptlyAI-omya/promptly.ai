@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Toaster } from 'sonner';
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,18 +22,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
-}: {
+}: Readonly<{
     children: React.ReactNode;
-}) {
+}>) {
     return (
         <html lang="en">
             <body className={inter.className}>
-                <Navbar />
-                <main className="min-h-screen pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
-                    {children}
-                </main>
-                <Footer />
-                <Toaster position="bottom-right" theme="dark" />
+                <Providers>
+                    <Navbar />
+                    <div className="pt-24 min-h-screen pb-12 px-6">
+                        {children}
+                        <Toaster position="bottom-right" theme="dark" />
+                    </div>
+                </Providers>
             </body>
         </html>
     );

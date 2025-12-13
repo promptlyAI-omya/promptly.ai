@@ -35,6 +35,18 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+// User model for Authentication
+model User {
+  id        String       @id @default(uuid())
+  name      String?
+  email     String       @unique
+  password  String
+  image     String?
+  role      String       @default("USER") // USER, ADMIN
+  createdAt DateTime     @default(now())
+  submissions Submission[]
+}
+
 model Submission {
   id          String   @id @default(uuid())
   name        String
@@ -49,4 +61,9 @@ model Submission {
   moderatedBy String?
   moderatedAt DateTime?
   createdAt   DateTime @default(now())
+  
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
 }
