@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { name, email, password } = body;
+
+        console.log('Register attempt:', { name, email }); // Log attempt
 
         if (!name || !email || !password) {
             return new NextResponse(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
@@ -32,7 +32,8 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json(user);
-    } catch (error) {
-        return new NextResponse(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+    } catch (error: any) {
+        console.error('Registration Error:', error); // Log full error to Vercel logs
+        return new NextResponse(JSON.stringify({ error: 'Internal Server Error', details: error.message }), { status: 500 });
     }
 }
