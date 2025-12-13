@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Prompt {
+  id           String   @id @default(uuid())
+  title        String
+  desc         String
+  category     String
+  imageUrl     String?
+  fullPrompt   String
+  tags         String   // Stored as comma-separated or JSON string
+  previewImage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Submission {
+  id          String   @id @default(uuid())
+  name        String
+  handle      String?
+  email       String
+  tool        String
+  promptText  String
+  link        String?
+  assetPath   String?
+  consent     Boolean
+  status      String   @default("pending") // pending, approved, rejected
+  moderatedBy String?
+  moderatedAt DateTime?
+  createdAt   DateTime @default(now())
+}
