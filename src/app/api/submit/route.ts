@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-
-// Note: In a real serverless env (Vercel), writing to local FS does not persist.
-// This is for "local runnable" requirement. Vercel users would need S3/Cloudinary.
-// We will add a warning in README.
+import { uploadImage } from '@/lib/cloudinary';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const schema = z.object({
     name: z.string().min(1),
@@ -15,12 +12,13 @@ const schema = z.object({
     tool: z.string(),
     promptText: z.string().min(5),
     link: z.string().url().optional().or(z.literal('')),
-    consent: z.string().transform(val => val === 'true'), // FormData comes as string
+    consent: z.string().transform(val => val === 'true'),
 });
 
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
+        const session = await getServerSession(authOptions);
 
         // Extract fields
         const validatedData = schema.parse({
@@ -37,33 +35,34 @@ export async function POST(request: NextRequest) {
         let assetPath = null;
 
         if (file) {
-            // Handle local upload
-            const bytes = await file.arrayBuffer();
-            const buffer = Buffer.from(bytes);
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
+                const base64 = buffer.toString('base64');
+                const dataURI = `data:${file.type};base64,${base64}`;
 
-            // Ensure uploads directory
-            const uploadDir = join(process.cwd(), 'public', 'uploads');
-            await mkdir(uploadDir, { recursive: true });
-
-            const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
-            const filepath = join(uploadDir, filename);
-
-            await writeFile(filepath, buffer);
-            assetPath = `/uploads/${filename}`;
+                const uploadResult = await uploadImage(dataURI, 'prompty-ai-submissions');
+                assetPath = uploadResult.secure_url;
+            } catch (uploadError) {
+                console.error('Image Upload Failed:', uploadError);
+                // Return 500 but detail it
+                throw new Error('Image upload failed');
+            }
         }
 
         const submission = await prisma.submission.create({
             data: {
                 ...validatedData,
                 assetPath,
-                status: 'pending' // Default status
+                status: 'pending',
+                userId: session?.user?.id
             }
         });
 
         return NextResponse.json({ message: 'Submission received', id: submission.id }, { status: 201 });
 
-    } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: 'Server error or validation failed' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Submit API Error:', error);
+        return NextResponse.json({ error: 'Server error', details: error.message }, { status: 500 });
     }
 }
