@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Copy, Tag } from 'lucide-react';
 import ClientCopyButton from '@/components/ClientCopyButton'; // Need to create this for client interactivity in server component page if desired, or just make page client.
