@@ -1,4 +1,4 @@
- npm install'use client';
+'use client';
 import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
