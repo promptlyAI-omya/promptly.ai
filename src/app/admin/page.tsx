@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 
 interface Submission {
@@ -66,7 +67,15 @@ export default function AdminPage() {
 
     return (
         <div className="max-w-6xl mx-auto space-y-8">
-            <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+                <Link
+                    href="/admin/blog"
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                >
+                    Manage Blog
+                </Link>
+            </div>
 
             <div className="glass p-8 rounded-2xl border border-white/5">
                 <h2 className="text-2xl font-bold mb-6">Pending Submissions</h2>
