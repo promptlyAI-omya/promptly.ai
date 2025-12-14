@@ -35,7 +35,7 @@ const Footer = () => {
                         <h4 className="font-semibold mb-4 text-white">Socials</h4>
                         <ul className="space-y-2 text-gray-400 text-sm">
                             <li>
-                                <a href="https://instagram.com/_promptly.ai_" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 flex items-center gap-2">
+                                <a href="https://www.instagram.com/_promptly.ai_/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 flex items-center gap-2">
                                     <span>Instagram</span> <span className="text-xs text-gray-600">(Main)</span>
                                 </a>
                             </li>
