@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-
-const prisma = new PrismaClient();
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
     const session = await getServerSession(authOptions);
@@ -28,19 +26,18 @@ export async function PATCH(request: Request, { params }: { params: { id: string
             }
         });
 
-        if (status === 'approved') {
-            await prisma.prompt.create({
-                data: {
-                    title: updated.name + "'s Prompt",
-                    desc: "Community Submission",
-                    category: updated.tool,
-                    imageUrl: updated.assetPath,
-                    fullPrompt: updated.promptText,
-                    tags: "community",
-                    previewImage: updated.assetPath
-                }
-            });
-        }
+        //     await prisma.prompt.create({
+        //         data: {
+        //             title: updated.name + "'s Prompt",
+        //             desc: "Community Submission",
+        //             category: updated.tool,
+        //             imageUrl: updated.assetPath,
+        //             fullPrompt: updated.promptText,
+        //             tags: "community",
+        //             previewImage: updated.assetPath
+        //         }
+        //     });
+        // }
 
         return NextResponse.json(updated);
     } catch (error) {

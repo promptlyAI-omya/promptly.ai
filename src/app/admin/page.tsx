@@ -69,12 +69,20 @@ export default function AdminPage() {
         <div className="max-w-6xl mx-auto space-y-8">
             <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-                <Link
-                    href="/admin/blog"
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold transition-colors"
-                >
-                    Manage Blog
-                </Link>
+                <div className="flex gap-4">
+                    <Link
+                        href="/admin/prompts/new"
+                        className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                    >
+                        + Add to Library
+                    </Link>
+                    <Link
+                        href="/admin/blog"
+                        className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                    >
+                        Manage Blog
+                    </Link>
+                </div>
             </div>
 
             <div className="glass p-8 rounded-2xl border border-white/5">
