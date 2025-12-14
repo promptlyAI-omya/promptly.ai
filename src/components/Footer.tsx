@@ -28,7 +28,32 @@ const Footer = () => {
                         <ul className="space-y-2 text-gray-400 text-sm">
                             <li><Link href="#" className="hover:text-white">Privacy Policy</Link></li>
                             <li><Link href="#" className="hover:text-white">Terms of Use</Link></li>
-                            <li><Link href="#" className="hover:text-white">Cookie Policy</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="font-semibold mb-4 text-white">Socials</h4>
+                        <ul className="space-y-2 text-gray-400 text-sm">
+                            <li>
+                                <a href="https://instagram.com/promptly.ai" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 flex items-center gap-2">
+                                    <span>Instagram</span> <span className="text-xs text-gray-600">(Main)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://instagram.com/promptly.creates" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 flex items-center gap-2">
+                                    <span>Instagram</span> <span className="text-xs text-gray-600">(Community)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://twitter.com/promptly_ai" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
+                                    Twitter / X
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://linkedin.com/company/promptly-ai" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+                                    LinkedIn
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
