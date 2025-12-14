@@ -67,6 +67,7 @@ export default function RootLayout({
                         {children}
                         <Toaster position="bottom-right" theme="dark" />
                     </div>
+                    <Footer />
                 </Providers>
             </body>
         </html>
