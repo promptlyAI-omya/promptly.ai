@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "seed": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" prisma/seed.ts"
+    "seed": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" prisma/seed.ts",
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",
@@ -25,6 +26,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "sonner": "^1.4.3",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.2.1",

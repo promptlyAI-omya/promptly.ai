@@ -45,6 +45,7 @@ model User {
   role      String       @default("USER") // USER, ADMIN
   createdAt DateTime     @default(now())
   submissions Submission[]
+  posts       BlogPost[]
 }
 
 model Submission {
@@ -66,4 +67,21 @@ model Submission {
   user        User?    @relation(fields: [userId], references: [id])
   
   @@index([userId])
+}
+
+model BlogPost {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String   // Markdown content
+  excerpt     String?
+  coverImage  String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  @@index([authorId])
 }

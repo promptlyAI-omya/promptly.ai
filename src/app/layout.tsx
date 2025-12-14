@@ -9,14 +9,47 @@ import { Providers } from "@/components/Providers";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'Promptly.ai - AI Prompt Library',
-    description: 'Curated high-quality prompts for Midjourney, DALL-E, & Stable Diffusion. Free until Jan 1, 2026.',
-    metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
+    title: {
+        default: 'Promptly.ai - AI Prompt Library',
+        template: '%s | Promptly.ai',
+    },
+    description: 'Discover curated high-quality AI prompts for Midjourney, DALL-E, & Stable Diffusion. Join our community of creators.',
+    keywords: ['AI prompts', 'Midjourney', 'DALL-E', 'Stable Diffusion', 'Generative AI', 'Art Prompts', 'Prompt Engineering'],
+    authors: [{ name: 'Promptly.ai Team' }],
+    creator: 'Promptly.ai',
+    metadataBase: new URL(process.env.NEXT_PUBLIC_URL || 'https://prompty.ai'),
     openGraph: {
-        title: 'Promptly.ai - AI Prompt Library',
-        description: 'Find the best AI art prompts.',
+        type: 'website',
+        locale: 'en_US',
+        url: 'https://prompty.ai',
+        title: 'Promptly.ai - Premium AI Prompt Marketplace',
+        description: 'Unlock your creativity with professional AI art prompts. Community-driven, curated, and free.',
         siteName: 'Promptly.ai',
+        images: [
+            {
+                url: '/og-image.jpg',
+                width: 1200,
+                height: 630,
+                alt: 'Promptly.ai - AI Prompt Library',
+            },
+        ],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Promptly.ai - AI Prompt Library',
+        description: 'Curated high-quality prompts for Midjourney, DALL-E, & Stable Diffusion.',
         images: ['/og-image.jpg'],
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
     },
 };
 
