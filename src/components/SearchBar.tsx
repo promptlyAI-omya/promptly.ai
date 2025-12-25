@@ -15,7 +15,7 @@ export default function SearchBar() {
     };
 
     return (
-        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto w-full group">
+        <form onSubmit={handleSearch} className="relative w-full max-w-lg mx-auto group">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur opacity-20 group-hover:opacity-30 transition-opacity"></div>
             <div className="relative flex items-center bg-black/80 backdrop-blur-xl border border-white/10 rounded-full p-2 pl-6 focus-within:border-white/20 transition-colors shadow-2xl">
                 <Search className="w-5 h-5 text-gray-400 mr-3" />
