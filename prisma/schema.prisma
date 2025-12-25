@@ -37,15 +37,16 @@ model ContactMessage {
 
 // User model for Authentication
 model User {
-  id        String       @id @default(uuid())
-  name      String?
-  email     String       @unique
-  password  String
-  image     String?
-  role      String       @default("USER") // USER, ADMIN
-  createdAt DateTime     @default(now())
-  submissions Submission[]
-  posts       BlogPost[]
+  id              String           @id @default(uuid())
+  name            String?
+  email           String           @unique
+  password        String
+  image           String?
+  role            String           @default("USER") // USER, ADMIN
+  createdAt       DateTime         @default(now())
+  submissions     Submission[]
+  posts           BlogPost[]
+  serviceRequests ServiceRequest[]
 }
 
 model Submission {
@@ -84,4 +85,35 @@ model BlogPost {
   author      User     @relation(fields: [authorId], references: [id])
   
   @@index([authorId])
+}
+
+model ServiceRequest {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  serviceType     String   // "video_editing", "photo_editing", "website_frontend", "website_fullstack"
+  
+  // Service-specific details
+  websiteName     String?
+  uiUxDetails     String?  // Text description
+  businessDetails String?  // Detailed business information
+  colorPalette    String?  // Optional color preferences
+  editDetails     String?  // For video/photo editing requirements
+  
+  // Contact Information
+  contactEmail    String
+  contactPhone    String?
+  
+  // Payment & Status
+  paymentStatus   String   @default("pending") // pending, paid, failed
+  transactionId   String?
+  amount          Float?
+  
+  status          String   @default("pending") // pending, in_progress, completed, cancelled
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
 }

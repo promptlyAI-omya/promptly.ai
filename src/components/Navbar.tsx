@@ -14,6 +14,7 @@ const Navbar = () => {
         { href: '/', label: 'Home' },
         { href: '/library', label: 'Library' },
         { href: '/resources', label: 'Resources' },
+        { href: '/services', label: 'Services' },
         { href: '/community', label: 'Community' },
         { href: '/blog', label: 'Blog' },
     ];
