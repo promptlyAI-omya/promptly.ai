@@ -35,7 +35,13 @@ export default function AdminPage() {
         try {
             const res = await fetch('/api/admin/submissions');
             const data = await res.json();
-            setSubmissions(data);
+            if (Array.isArray(data)) {
+                setSubmissions(data);
+            } else {
+                setSubmissions([]);
+                console.error("Failed to fetch submissions, invalid data:", data);
+                // Optionally handle error message from backend
+            }
         } catch (error) {
             toast.error('Failed to load submissions');
         } finally {

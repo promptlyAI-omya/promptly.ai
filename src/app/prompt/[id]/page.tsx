@@ -1,7 +1,9 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Copy, Tag } from 'lucide-react';
-import ClientCopyButton from '@/components/ClientCopyButton'; // Need to create this for client interactivity in server component page if desired, or just make page client.
+import ClientCopyButton from '@/components/ClientCopyButton';
+import ExecutionBreakdown from '@/components/ExecutionBreakdown';
+import ExpectationNote from '@/components/ExpectationNote';
 // Making page server component for better SEO
 
 export default async function PromptDetail({ params }: { params: { id: string } }) {
@@ -37,15 +39,27 @@ export default async function PromptDetail({ params }: { params: { id: string } 
                         <p className="text-gray-300 leading-relaxed">{prompt.desc}</p>
                     </div>
 
-                    <div className="glass p-6 rounded-xl space-y-4">
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-semibold text-gray-200">Prompt</h3>
-                            <ClientCopyButton text={prompt.fullPrompt} />
-                        </div>
-                        <div className="bg-black/40 p-4 rounded-lg text-gray-300 font-mono text-sm break-words border border-white/5">
-                            {prompt.fullPrompt}
-                        </div>
+                    <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold text-gray-200">Prompt</h3>
+                        <ClientCopyButton text={prompt.fullPrompt} />
                     </div>
+                    <div className="bg-black/40 p-4 rounded-lg text-gray-300 font-mono text-sm break-words border border-white/5">
+                        {prompt.fullPrompt}
+                    </div>
+
+
+                    {/* Execution Breakdown Integration */}
+                    {prompt.showExecutionBreakdown && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <ExecutionBreakdown
+                                aiPercentage={prompt.aiPercentage}
+                                manualSteps={prompt.manualSteps}
+                                aiTools={prompt.aiTools}
+                                manualTools={prompt.manualTools}
+                            />
+                            <ExpectationNote />
+                        </div>
+                    )}
 
                     <div className="flex flex-wrap gap-2">
                         {prompt.tags.split(',').map(tag => (

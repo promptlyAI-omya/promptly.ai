@@ -5,6 +5,10 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // relationMode = "prisma" // Removed to allow foreign keys if supported or keep it and ensure indexes. 
+  // Actually, Vercel Postgres usually works fine with relationMode = "prisma", but let's stick to default if possible or keep as is.
+  // The user didn't ask to change this, so I will keep relationMode = "prisma" if it was there, but the snippet above suggests I should just leave it alone.
+  // Wait, I am not editing this part in my tool call, so it's fine.
   relationMode = "prisma"
 }
 
@@ -17,6 +21,14 @@ model Prompt {
   fullPrompt   String
   tags         String   // Stored as comma-separated or JSON string
   previewImage String?
+  
+  // Execution Breakdown Fields
+  aiPercentage           Int      @default(0)
+  manualSteps            String[] @default([])
+  aiTools                String[] @default([])
+  manualTools            String[] @default([])
+  showExecutionBreakdown Boolean  @default(false)
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -88,32 +100,34 @@ model BlogPost {
 }
 
 model ServiceRequest {
-  id              String   @id @default(uuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+
+  serviceId    String
+  service      Service  @relation(fields: [serviceId], references: [id])
+
+  budget       String?
+  deadline     String?
+  requirements String   // Stored as JSON string
   
-  serviceType     String   // "video_editing", "photo_editing", "website_frontend", "website_fullstack"
+  status       String   @default("NEW") // NEW, IN_PROGRESS, COMPLETED, REJECTED
   
-  // Service-specific details
-  websiteName     String?
-  uiUxDetails     String?  // Text description
-  businessDetails String?  // Detailed business information
-  colorPalette    String?  // Optional color preferences
-  editDetails     String?  // For video/photo editing requirements
-  
-  // Contact Information
-  contactEmail    String
-  contactPhone    String?
-  
-  // Payment & Status
-  paymentStatus   String   @default("pending") // pending, paid, failed
-  transactionId   String?
-  amount          Float?
-  
-  status          String   @default("pending") // pending, in_progress, completed, cancelled
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   
   @@index([userId])
+  @@index([serviceId])
+}
+
+model Service {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  startingPrice Float
+  isActive      Boolean  @default(true)
+  requests      ServiceRequest[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

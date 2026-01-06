@@ -1,124 +1,168 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import ServiceCard from "@/components/ServiceCard";
+import { motion } from "framer-motion";
+import { Loader2, Zap, Layout, Video } from "lucide-react";
+
+// Fallback hardcoded services if API fails or is empty initially (for better UX)
+const INITIAL_SERVICES = [
+    {
+        id: "video-editing-id", // In real app, this would be UUID from DB
+        title: "AI Short-Form Video Editing",
+        description: "Transform your raw footage into viral Reels & Shorts using our AI-driven workflow.",
+        startingPrice: 49,
+        features: ["Script to Video", "AI Captions & Effects", "Trend Analysis", "48h Delivery"],
+        icon: Video
+    },
+    {
+        id: "visual-design-id",
+        title: "AI Visual Design",
+        description: "Stunning thumbnails, posters, and ads generated & refined by expert designers.",
+        startingPrice: 29,
+        features: ["High CTR Thumbnails", "Brand Consistent", "Multiple Variations", "Source Files Included"],
+        icon: Layout
+    },
+    {
+        id: "website-creation-id",
+        title: "AI Website Creation",
+        description: "Lightning fast website builds for creators and small businesses.",
+        startingPrice: 199,
+        features: ["Next.js & Tailwind", "SEO Optimized", "Mobile Responsive", "Copywriting Included"],
+        icon: Zap
+    }
+];
 
 export default function ServicesPage() {
-    const [showPopup, setShowPopup] = useState(false);
+    const [services, setServices] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Show popup when component mounts
-        setShowPopup(true);
+        async function fetchServices() {
+            try {
+                const res = await fetch("/api/services");
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    // Map DB fields to UI fields if necessary, or just use data
+                    // For now, let's merge with features which might not be in DB yet
+                    const mapped = data.map(s => ({
+                        ...s,
+                        price: s.startingPrice,
+                        features: ["AI-Powered Workflow", "Founder-Led Quality", "Fast Turnaround"] // Generic features if not in DB
+                    }));
+                    setServices(mapped);
+                } else {
+                    setServices(INITIAL_SERVICES.map(s => ({
+                        id: s.id, // We'll need to handle IDs carefully if using request form
+                        title: s.title,
+                        description: s.description,
+                        startingPrice: s.startingPrice,
+                        features: s.features
+                    })));
+                }
+            } catch (e) {
+                console.error("Failed to fetch services", e);
+                setServices(INITIAL_SERVICES.map(s => ({
+                    ...s,
+                    price: s.startingPrice
+                })));
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchServices();
     }, []);
 
     return (
-        <>
-            <div className="min-h-screen pt-24 pb-16 px-4">
-                <div className="max-w-7xl mx-auto">
-                    {/* Placeholder content - will be developed later */}
-                </div>
-            </div>
+        <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
+            {/* Background Gradients */}
+            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black -z-10" />
 
-            {/* Coming Soon Popup */}
-            <AnimatePresence>
-                {showPopup && (
+            <main className="container mx-auto px-4 py-24">
+                {/* Hero Section */}
+                <div className="text-center max-w-4xl mx-auto mb-24">
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                        onClick={() => setShowPopup(false)}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
                     >
-                        {/* Blur Background */}
-                        <motion.div
-                            initial={{ backdropFilter: 'blur(0px)' }}
-                            animate={{ backdropFilter: 'blur(12px)' }}
-                            exit={{ backdropFilter: 'blur(0px)' }}
-                            className="absolute inset-0 bg-black/60"
-                        />
+                        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-gradient-to-br from-white via-white to-gray-500 bg-clip-text text-transparent">
+                            Done-For-You{" "}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                                AI Services
+                            </span>
+                        </h1>
+                        <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                            Founder-led execution. No templates. We combine human expertise with
+                            advanced AI pipelines to deliver premium results at speed.
+                        </p>
 
-                        {/* Popup Card */}
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.8, opacity: 0, y: 20 }}
-                            transition={{ type: 'spring', duration: 0.5 }}
-                            className="relative glass-card rounded-3xl p-8 md:p-12 max-w-md w-full text-center overflow-hidden"
-                            onClick={(e) => e.stopPropagation()}
+                        <button
+                            onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]"
                         >
-                            {/* Gradient Border Animation */}
-                            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 opacity-20 animate-pulse" />
-
-                            {/* Close Button */}
-                            <button
-                                onClick={() => setShowPopup(false)}
-                                className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
-                            >
-                                <X className="w-5 h-5 text-white" />
-                            </button>
-
-                            {/* Content */}
-                            <div className="relative z-10 space-y-6">
-                                {/* Animated Icon */}
-                                <motion.div
-                                    initial={{ rotate: 0 }}
-                                    animate={{ rotate: [0, 10, -10, 10, 0] }}
-                                    transition={{ duration: 0.6, delay: 0.2 }}
-                                    className="inline-block"
-                                >
-                                    <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 flex items-center justify-center">
-                                        <span className="text-4xl">🚀</span>
-                                    </div>
-                                </motion.div>
-
-                                {/* Title */}
-                                <motion.h2
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent"
-                                >
-                                    Coming Soon
-                                </motion.h2>
-
-                                {/* Description */}
-                                <motion.p
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 }}
-                                    className="text-gray-400 text-lg"
-                                >
-                                    We're working hard to bring you amazing services. Stay tuned for updates!
-                                </motion.p>
-
-                                {/* Decorative Elements */}
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 }}
-                                    className="flex justify-center gap-2 pt-4"
-                                >
-                                    {[0, 1, 2].map((i) => (
-                                        <motion.div
-                                            key={i}
-                                            animate={{
-                                                y: [0, -10, 0],
-                                            }}
-                                            transition={{
-                                                duration: 1,
-                                                repeat: Infinity,
-                                                delay: i * 0.2,
-                                            }}
-                                            className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
-                                        />
-                                    ))}
-                                </motion.div>
-                            </div>
-                        </motion.div>
+                            Request a Project
+                        </button>
                     </motion.div>
-                )}
-            </AnimatePresence>
-        </>
+                </div>
+
+                {/* Services Grid */}
+                <div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+                    {loading ? (
+                        <div className="col-span-3 flex justify-center py-20">
+                            <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+                        </div>
+                    ) : (
+                        services.map((service, index) => (
+                            <ServiceCard
+                                key={service.id || index}
+                                id={service.id || "manual-id"}
+                                title={service.title}
+                                description={service.description}
+                                price={service.startingPrice || service.price}
+                                features={service.features || ["Fast Delivery", "Premium Quality"]}
+                                delay={index}
+                            />
+                        ))
+                    )}
+                </div>
+
+                {/* Why Promptly Section */}
+                <div className="rounded-3xl bg-neutral-900/50 border border-white/5 p-8 md:p-16 mb-32 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-purple-900/10 to-transparent -z-10" />
+
+                    <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6">Why Prompty.ai?</h2>
+                            <div className="space-y-6">
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shrink-0">
+                                        <Zap className="w-6 h-6 text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-semibold mb-2">Prompt-Driven Workflows</h3>
+                                        <p className="text-gray-400">We don't just use tools; we build custom AI pipelines tailored to your specific needs.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shrink-0">
+                                        <Layout className="w-6 h-6 text-purple-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-semibold mb-2">Creator-First Mindset</h3>
+                                        <p className="text-gray-400">Built by creators, for creators. We understand engagement, retention, and aesthetics.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="relative h-[300px] rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border border-white/10 flex items-center justify-center backdrop-blur-3xl">
+                            <p className="font-mono text-sm text-purple-300">
+                                {`{ execution_mode: "expert_human_in_loop" }`}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     );
 }
