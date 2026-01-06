@@ -9,15 +9,17 @@ const blogSchema = z.object({
     slug: z.string().min(1).regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with dashes"),
     content: z.string().min(1),
     excerpt: z.string().optional(),
-    coverImage: z.string().optional(),
-    published: z.boolean().default(false),
+    featuredImage: z.string().optional(),
+    status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'), // Keeping as validation but accepting string in DB
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== 'ADMIN') {
+        if (!session || !['ADMIN', 'EDITOR'].includes(session.user.role as string)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
@@ -36,7 +38,8 @@ export async function POST(request: NextRequest) {
         const post = await prisma.blogPost.create({
             data: {
                 ...validatedData,
-                authorId: session.user.id
+                authorId: session.user.id,
+                publishedAt: validatedData.status === 'PUBLISHED' ? new Date() : null,
             }
         });
 

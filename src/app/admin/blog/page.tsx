@@ -1,86 +1,152 @@
-'use client';
-import useSWR from 'swr';
-import Link from 'next/link';
-import { Plus, Edit, Eye, Trash, FileText } from 'lucide-react';
-import { format } from 'date-fns';
+"use client";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Plus, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { format } from "date-fns";
+import { toast } from "sonner";
+
+interface BlogPost {
+    id: string;
+    title: string;
+    slug: string;
+    status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+    createdAt: string;
+    author: {
+        name: string | null;
+    };
+}
 
 export default function AdminBlogPage() {
-    const { data, mutate, isLoading } = useSWR('/api/admin/blog', fetcher);
+    const [posts, setPosts] = useState<BlogPost[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        fetchPosts();
+    }, []);
+
+    const fetchPosts = async () => {
+        try {
+            const res = await fetch("/api/admin/blog");
+            if (!res.ok) throw new Error("Failed to fetch posts");
+            const data = await res.json();
+            setPosts(data.data);
+        } catch (error) {
+            toast.error("Failed to load blog posts");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const deletePost = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this post?")) return;
+
+        try {
+            const res = await fetch(`/api/admin/blog/${id}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error("Failed to delete");
+
+            toast.success("Post deleted successfully");
+            setPosts(posts.filter(p => p.id !== id));
+        } catch (error) {
+            toast.error("Failed to delete post");
+        }
+    };
 
     return (
-        <div className="min-h-screen pt-24 pb-10 px-4 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Manage Blog Posts</h1>
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Blog Posts</h1>
+                    <p className="text-gray-400">Manage your blog content and publications.</p>
+                </div>
                 <Link
                     href="/admin/blog/new"
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
                 >
-                    <Plus size={18} /> New Post
+                    <Plus className="h-4 w-4" />
+                    New Post
                 </Link>
             </div>
 
-            {isLoading ? (
-                <div className="text-gray-400">Loading posts...</div>
-            ) : (
-                <div className="glass rounded-xl overflow-hidden border border-white/5">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-white/5 bg-white/5">
-                                <th className="p-4 font-medium text-gray-300">Title</th>
-                                <th className="p-4 font-medium text-gray-300">Status</th>
-                                <th className="p-4 font-medium text-gray-300">Date</th>
-                                <th className="p-4 font-medium text-gray-300">Actions</th>
+            <div className="rounded-md border border-gray-800 bg-gray-900/50">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-gray-400">
+                        <thead className="bg-gray-900 text-gray-200">
+                            <tr>
+                                <th className="px-6 py-3 font-medium">Title</th>
+                                <th className="px-6 py-3 font-medium">Status</th>
+                                <th className="px-6 py-3 font-medium">Author</th>
+                                <th className="px-6 py-3 font-medium">Date</th>
+                                <th className="px-6 py-3 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {data?.data?.map((post: any) => (
-                                <tr key={post.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                    <td className="p-4">
-                                        <div className="font-medium text-white">{post.title}</div>
-                                        <div className="text-xs text-gray-500 font-mono">/{post.slug}</div>
-                                    </td>
-                                    <td className="p-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${post.published ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
-                                            {post.published ? 'Published' : 'Draft'}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 text-sm text-gray-400">
-                                        {format(new Date(post.createdAt), 'MMM d, yyyy')}
-                                    </td>
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-2">
-                                            <Link
-                                                href={`/blog/${post.slug}`}
-                                                target="_blank"
-                                                className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
-                                                title="View"
-                                            >
-                                                <Eye size={16} />
-                                            </Link>
-                                            <button
-                                                className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                                                title="Delete (Coming Soon)"
-                                            >
-                                                <Trash size={16} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            {data?.data?.length === 0 && (
+                        <tbody className="divide-y divide-gray-800">
+                            {isLoading ? (
                                 <tr>
-                                    <td colSpan={4} className="p-8 text-center text-gray-500">
-                                        No blog posts yet. Create your first one!
+                                    <td colSpan={5} className="px-6 py-8 text-center">
+                                        Loading posts...
                                     </td>
                                 </tr>
+                            ) : posts.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center">
+                                        No posts found. Create one to get started.
+                                    </td>
+                                </tr>
+                            ) : (
+                                posts.map((post) => (
+                                    <tr key={post.id} className="hover:bg-gray-900/30">
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-white">{post.title}</div>
+                                            <div className="text-xs text-gray-500">/{post.slug}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${post.status === 'PUBLISHED'
+                                                    ? 'bg-green-500/10 text-green-400'
+                                                    : 'bg-yellow-500/10 text-yellow-400'
+                                                }`}>
+                                                {post.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">{post.author.name || 'Unknown'}</td>
+                                        <td className="px-6 py-4">
+                                            {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                {post.status === 'PUBLISHED' && (
+                                                    <a
+                                                        href={`/blog/${post.slug}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="p-1 hover:text-white"
+                                                    >
+                                                        <ExternalLink className="h-4 w-4" />
+                                                    </a>
+                                                )}
+                                                <Link
+                                                    href={`/admin/blog/${post.id}`}
+                                                    className="p-1 hover:text-white"
+                                                >
+                                                    <Pencil className="h-4 w-4" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => deletePost(post.id)}
+                                                    className="p-1 hover:text-red-400"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                     </table>
                 </div>
-            )}
+            </div>
         </div>
     );
 }

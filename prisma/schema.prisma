@@ -54,7 +54,7 @@ model User {
   email           String           @unique
   password        String
   image           String?
-  role            String           @default("USER") // USER, ADMIN
+  role            String           @default("USER") // USER, WRITER, EDITOR, ADMIN
   createdAt       DateTime         @default(now())
   submissions     Submission[]
   posts           BlogPost[]
@@ -86,10 +86,24 @@ model BlogPost {
   id          String   @id @default(uuid())
   title       String
   slug        String   @unique
-  content     String   // Markdown content
+  content     String   // HTML Content
   excerpt     String?
-  coverImage  String?
-  published   Boolean  @default(false)
+  featuredImage  String?
+  
+  status      String     @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  publishedAt DateTime?
+  
+  // SEO Fields
+  seoTitle       String?
+  seoDescription String?
+  canonicalUrl   String?
+  focusKeyword   String?
+  
+  // Open Graph
+  ogTitle        String?
+  ogDescription  String?
+  ogImage        String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

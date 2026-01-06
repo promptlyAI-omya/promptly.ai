@@ -8,6 +8,23 @@ async function main() {
     // Clean existing data
     await prisma.prompt.deleteMany()
     await prisma.submission.deleteMany()
+    // Optional: await prisma.user.deleteMany() // Be careful not to wipe existing users if not intended, but for seed it's okay usually.
+
+    // Seed Admin User
+    const bcrypt = require('bcryptjs');
+    const password = await bcrypt.hash('password123', 10);
+
+    await prisma.user.upsert({
+        where: { email: 'admin@prompty.ai' },
+        update: {},
+        create: {
+            email: 'admin@prompty.ai',
+            name: 'Admin User',
+            password,
+            role: 'ADMIN'
+        }
+    });
+    console.log('Admin user seeded: admin@prompty.ai / password123');
 
     // Seed Prompts (Placeholders as original data was not provided)
     const prompts = [

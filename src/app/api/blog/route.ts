@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
         const posts = await prisma.blogPost.findMany({
             where: {
-                published: true
+                status: 'PUBLISHED'
             },
             take: limit,
             skip: offset,
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        const total = await prisma.blogPost.count({ where: { published: true } });
+        const total = await prisma.blogPost.count({ where: { status: 'PUBLISHED' } });
 
         return NextResponse.json({
             data: posts,
