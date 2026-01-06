@@ -14,7 +14,7 @@ export default function AboutPage() {
                     Whether you are using Midjourney, DALL-E, or Stable Diffusion, getting the exact result you want can be tricky.
                 </p>
                 <p>
-                    That's why we've curated over 10,000 prompts (and growing) — tested and verified to ensure they deliver stunning results.
+                    That&apos;s why we&apos;ve curated over 10,000 prompts (and growing) — tested and verified to ensure they deliver stunning results.
                 </p>
 
                 <h2 className="text-2xl font-bold text-white pt-4">Free until Jan 1, 2026</h2>

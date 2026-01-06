@@ -1,10 +1,7 @@
 import { cn, stripHtml } from '@/lib/utils';
-// ... (rest of imports)
+import Link from 'next/link';
+import { Calendar, User } from 'lucide-react';
 
-// Inside the component map loop:
-<p className="text-gray-400 text-sm mb-4 line-clamp-3 flex-1">
-    {post.excerpt || stripHtml(post.content).substring(0, 100) + '...'}
-</p>
 import { format } from 'date-fns';
 import prisma from '@/lib/prisma';
 import { Metadata } from 'next';

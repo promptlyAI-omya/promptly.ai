@@ -89,7 +89,7 @@ function RequestFormContent() {
                     animate={{ opacity: 1, y: 0 }}
                 >
                     <h1 className="text-3xl font-bold mb-2">Request a Project</h1>
-                    <p className="text-gray-400 mb-8">Tell us what you need, and we'll handle the rest.</p>
+                    <p className="text-gray-400 mb-8">Tell us what you need, and we&apos;ll handle the rest.</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6 bg-neutral-900/50 p-8 rounded-2xl border border-white/10 backdrop-blur-md">
 

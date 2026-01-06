@@ -141,7 +141,7 @@ export default function ServicesPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-semibold mb-2">Prompt-Driven Workflows</h3>
-                                        <p className="text-gray-400">We don't just use tools; we build custom AI pipelines tailored to your specific needs.</p>
+                                        <p className="text-gray-400">We don&apos;t just use tools; we build custom AI pipelines tailored to your specific needs.</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
